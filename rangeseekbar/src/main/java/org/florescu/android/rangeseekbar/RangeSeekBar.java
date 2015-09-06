@@ -567,15 +567,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private void trackTouchEvent(MotionEvent event) {
         final int pointerIndex = event.findPointerIndex(mActivePointerId);
         final float x = event.getX(pointerIndex);
-        System.out.println("THUMB " + x);
         if(Thumb.CURRENT.equals(pressedThumb) && !mSingleThumb){
-            System.out.println("THUMB Current");
             setNormalizedCurrentValue(screenToNormalized(x));
         }else if (Thumb.MIN.equals(pressedThumb) && !mSingleThumb) {
-            System.out.println("THUMB MIN");
             setNormalizedMinValue(screenToNormalized(x));
         } else if (Thumb.MAX.equals(pressedThumb)) {
-            System.out.println("THUMB MAX");
             setNormalizedMaxValue(screenToNormalized(x));
         }
     }
@@ -831,7 +827,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private void setNormalizedMinValue(double value) {
         normalizedMinValue = Math.max(0d, Math.min(1d, Math.min(value, normalizedMaxValue)));
         if(mCurrentValueThumb){
-            normalizedMinValue = Math.min(normalizedMinValue, normalizedCurrentValue);
+            if(normalizedMinValue >= normalizedCurrentValue){
+                normalizedCurrentValue = normalizedMinValue;
+            }
         }
         invalidate();
     }
@@ -854,7 +852,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private void setNormalizedMaxValue(double value) {
         normalizedMaxValue = Math.max(0d, Math.min(1d, Math.max(value, normalizedMinValue)));
         if(mCurrentValueThumb) {
-            normalizedMaxValue = Math.max(normalizedMaxValue, normalizedCurrentValue);
+            if(normalizedMaxValue <= normalizedCurrentValue){
+                normalizedCurrentValue = normalizedMaxValue;
+            }
         }
         invalidate();
     }
