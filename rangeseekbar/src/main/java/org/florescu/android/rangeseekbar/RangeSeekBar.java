@@ -504,7 +504,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                     }
 
                     if (notifyWhileDragging && listener != null) {
-                        listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                        if(Thumb.CURRENT.equals(pressedThumb)){
+                            listener.onRangeSeekBarCurrentValueChanged(this, getSelectedCurrentValue());
+                        }else{
+                            listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                        }
+
                     }
                 }
                 break;
@@ -521,11 +526,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                     onStopTrackingTouch();
                 }
 
+
+                if (listener != null) {
+                    if(Thumb.CURRENT.equals(pressedThumb)){
+                        listener.onRangeSeekBarCurrentValueChanged(this, getSelectedCurrentValue());
+                    }else{
+                        listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                    }
+                }
                 pressedThumb = null;
                 invalidate();
-                if (listener != null) {
-                    listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
-                }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN: {
                 final int index = event.getPointerCount() - 1;
@@ -978,7 +988,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      */
     public interface OnRangeSeekBarChangeListener<T> {
-
+        void onRangeSeekBarCurrentValueChanged(RangeSeekBar<?> bar, T currentValue);
         void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
     }
 
